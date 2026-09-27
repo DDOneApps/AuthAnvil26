@@ -1,0 +1,35 @@
+name: Build AuthAnvil26
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build plugin with Maven
+        run: mvn -B clean package
+
+      - name: Upload built JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AuthAnvil26-jar
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 30
